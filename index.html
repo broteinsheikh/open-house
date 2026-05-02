@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open House Registry</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #18181b;
+  --ink-60:   rgba(24,24,27,.6);
+  --ink-20:   rgba(24,24,27,.08);
+  --paper:    #faf9f7;
+  --warm:     #f3f0ea;
+  --border:   #e8e4dd;
+  --white:    #ffffff;
+  --gold:     #c8a96e;
+  --gold-dk:  #9e7e45;
+  --gold-glow:rgba(200,169,110,.18);
+  --rose:     #d4857a;
+  --radius-lg:20px;
+  --radius-md:12px;
+  --radius-sm:8px;
+  --ease:     cubic-bezier(.22,1,.36,1);
+  --shadow-sm:0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.07), 0 16px 40px rgba(0,0,0,.07);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.08), 0 32px 64px rgba(0,0,0,.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── VIEWS ─── */
+.view { display: none; min-height: 100vh; }
+.view.active { display: flex; flex-direction: column; }
+
+/* ══════════════════════ ADMIN ══════════════════════ */
+#admin-view { background: var(--paper); }
+
+/* Nav */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 52px; height: 64px;
+  background: rgba(250,249,247,.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 20;
+}
+@media(max-width:700px){ .nav { padding: 0 24px; } }
+
+.nav-logo {
+  display: flex; align-items: center; gap: 11px;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 17px; color: var(--ink); letter-spacing: -.01em;
+}
+.nav-dot {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--ink); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ink-60);
+}
+
+/* Hero */
+.hero {
+  padding: 72px 52px 64px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: 0; right: 0; width: 480px; height: 100%;
+  background: radial-gradient(ellipse at 80% 40%, rgba(200,169,110,.08) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gold-dk); margin-bottom: 20px;
+}
+.hero-chip span { width: 24px; height: 1.5px; background: currentColor; display: block; }
+.hero h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(38px, 5.5vw, 68px);
+  font-weight: 400; color: var(--ink);
+  line-height: 1.1; letter-spacing: -.02em;
+  margin-bottom: 16px; max-width: 680px;
+}
+.hero h1 i { font-style: italic; color: var(--gold-dk); }
+.hero p {
+  font-size: 16px; color: var(--ink-60); font-weight: 300;
+  max-width: 480px; line-height: 1.75;
+}
+@media(max-width:700px){
+  .hero { padding: 48px 24px 40px; }
+  .hero p { font-size: 15px; }
+}
+
+/* Workspace grid */
+.workspace {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 24px; padding: 36px 52px; flex: 1;
+}
+@media(max-width:860px){
+  .workspace { grid-template-columns: 1fr; padding: 24px; gap: 20px; }
+}
+
+/* Card */
+.card {
+  background: var(--white); border-radius: var(--radius-lg);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  padding: 32px; transition: box-shadow .2s;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+
+.card-title {
+  font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold); display: flex; align-items: center; gap: 10px; margin-bottom: 26px;
+}
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* Fields */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; font-size: 10px; font-weight: 600; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-60); margin-bottom: 7px;
+}
+.field input[type="text"],
+.field textarea {
+  width: 100%; background: var(--paper);
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  padding: 13px 15px; color: var(--ink);
+  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 400;
+  outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+  line-height: 1.5;
+}
+.field input:focus, .field textarea:focus {
+  border-color: var(--gold); background: var(--white);
+  box-shadow: 0 0 0 4px var(--gold-glow);
+}
+.field input::placeholder, .field textarea::placeholder {
+  color: var(--ink-60); font-weight: 300; font-size: 14px;
+}
+.field textarea { resize: vertical; min-height: 92px; }
+
+/* Generate button */
+.btn-generate {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px;
+  background: var(--ink); color: var(--white);
+  border: none; border-radius: var(--radius-md); padding: 15px 24px;
+  font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; cursor: pointer;
+  margin-top: 8px;
+  transition: background .2s, transform .15s var(--ease), box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.16), 0 8px 24px rgba(0,0,0,.1);
+}
+.btn-generate:hover {
+  background: var(--gold-dk); transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(158,126,69,.3), 0 12px 32px rgba(158,126,69,.2);
+}
+.btn-generate:active { transform: none; }
+
+/* QR area */
+.qr-area {
+  background: var(--paper); border-radius: var(--radius-md);
+  border: 1.5px dashed var(--border); padding: 28px 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 236px; gap: 14px; margin-bottom: 16px;
+  transition: border-color .3s, border-style .3s;
+}
+.qr-area.live { border-style: solid; border-color: var(--border); background: var(--white); }
+
+#qr-placeholder {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  text-align: center; color: var(--ink-60);
+}
+.qr-empty-icon {
+  width: 56px; height: 56px; border-radius: var(--radius-md);
+  border: 1.5px dashed var(--border);
+  display: flex; align-items: center; justify-content: center; color: var(--gold);
+}
+#qr-placeholder p { font-size: 13px; font-weight: 300; line-height: 1.65; }
+#qr-placeholder strong { font-weight: 500; color: var(--ink); }
+#qr-code { display: flex; align-items: center; justify-content: center; }
+#qr-code img, #qr-code canvas { border-radius: var(--radius-sm); display: block; }
+.qr-scan-label {
+  font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--gold-dk); display: none;
+}
+
+.url-row {
+  background: var(--paper); border-radius: var(--radius-sm);
+  padding: 12px 14px; margin-bottom: 12px; display: none;
+  border: 1px solid var(--border);
+}
+.url-row-top { font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.url-row-val { font-size: 12px; color: var(--ink-60); word-break: break-all; line-height: 1.5; font-weight: 300; }
+
+.action-trio { display: none; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.btn-action {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 6px; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-60); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: all .15s;
+}
+.btn-action:hover { border-color: var(--gold); color: var(--gold-dk); background: var(--paper); }
+
+/* Entries */
+.entries-wrap {
+  margin: 0 52px 52px; background: var(--white);
+  border-radius: var(--radius-lg); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+@media(max-width:860px){ .entries-wrap { margin: 0 24px 32px; } }
+
+.entries-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 30px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; gap: 12px;
+}
+.entries-heading {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 20px; font-weight: 400; color: var(--ink);
+  display: flex; align-items: center; gap: 10px;
+}
+.count-chip {
+  font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+  background: var(--ink); color: var(--white);
+  border-radius: 100px; padding: 3px 11px; letter-spacing: .04em;
+}
+.btn-csv {
+  background: transparent; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--ink-60); padding: 8px 16px;
+  font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; transition: all .15s;
+}
+.btn-csv:hover { border-color: var(--gold); color: var(--gold-dk); }
+
+.etable { width: 100%; border-collapse: collapse; }
+.etable th {
+  text-align: left; font-size: 10px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-60); padding: 12px 20px;
+  background: var(--paper); border-bottom: 1px solid var(--border);
+}
+.etable td {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  font-size: 14px; color: var(--ink); vertical-align: middle;
+}
+.etable tr:last-child td { border-bottom: none; }
+.etable tbody tr:hover td { background: var(--paper); }
+.td-bold { font-weight: 500; }
+.td-mute { color: var(--ink-60); font-size: 13px; font-weight: 300; }
+.td-time { font-size: 11px; color: var(--ink-60); white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 100px;
+  background: var(--warm); color: var(--ink-60); border: 1px solid var(--border);
+}
+
+.empty {
+  padding: 64px 32px; text-align: center; display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+}
+.empty-ico {
+  width: 52px; height: 52px; background: var(--warm); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); margin-bottom: 6px;
+}
+.empty strong { font-family:'Libre Baskerville',serif; font-size:18px; font-weight:400; color:var(--ink); }
+.empty p { font-size:14px; color:var(--ink-60); font-weight:300; line-height:1.7; max-width:320px; }
+
+/* ══════════════════════ GUEST VIEW ══════════════════════ */
+#guest-view {
+  background: var(--warm);
+  align-items: center; justify-content: center;
+  padding: 40px 20px; min-height: 100vh;
+}
+
+#guest-view::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: .35;
+}
+
+.gcard {
+  width: 100%; max-width: 500px; position: relative; z-index: 1;
+  background: var(--white); border-radius: 24px; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  animation: rise .55s var(--ease) both;
+}
+@keyframes rise {
+  from { opacity:0; transform: translateY(28px) scale(.97); }
+  to   { opacity:1; transform: none; }
+}
+
+.ghead {
+  background: var(--ink);
+  padding: 52px 48px 48px;
+  position: relative; overflow: hidden;
+}
+.ghead::before {
+  content: '';
+  position: absolute; top: -100px; right: -100px;
+  width: 340px; height: 340px; border-radius: 50%;
+  border: 1px solid rgba(200,169,110,.15);
+  pointer-events: none;
+}
+.ghead::after {
+  content: '';
+  position: absolute; bottom: -60px; left: -60px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,169,110,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.ghead-accent {
+  position: absolute; top: 0; left: 48px; right: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+.gkicker {
+  font-size: 10px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+.gkicker::before { content:''; width:18px; height:1px; background:var(--gold); }
+
+.ghead h2 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: clamp(34px, 6vw, 46px); font-weight: 400;
+  color: var(--white); line-height: 1.12; letter-spacing: -.015em;
+  position: relative; z-index: 1;
+}
+.ghead h2 i { font-style: italic; color: var(--gold); }
+
+.ghead-host {
+  margin-top: 14px; font-size: 13px; font-weight: 300;
+  color: rgba(255,255,255,.38); position: relative; z-index: 1; letter-spacing: .04em;
+}
+
+.gform { padding: 40px 48px; }
+@media(max-width:540px){
+  .ghead { padding: 40px 28px 36px; }
+  .gform { padding: 30px 28px; }
+  .ghead-accent { left:28px; right:28px; }
+}
+
+.gnote {
+  background: linear-gradient(135deg, var(--paper), var(--warm));
+  border-left: 2px solid var(--gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px; margin-bottom: 28px; display: none;
+}
+.gnote p {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 15px; font-style: italic; color: var(--ink-60); line-height: 1.7;
+}
+
+.gf { margin-bottom: 14px; }
+.gf label {
+  display: block; font-size: 10px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-60); margin-bottom: 7px;
+}
+.gf input[type="text"],
+.gf input[type="email"],
+.gf input[type="tel"],
+.gf textarea {
+  width: 100%; background: var(--paper);
+  border: 1.5px solid transparent; border-radius: var(--radius-md);
+  padding: 13px 15px; color: var(--ink);
+  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 400;
+  outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
+  line-height: 1.5;
+}
+.gf input:focus, .gf textarea:focus {
+  border-color: var(--gold); background: var(--white);
+  box-shadow: 0 0 0 4px var(--gold-glow);
+}
+.gf input::placeholder, .gf textarea::placeholder {
+  color: var(--ink-60); font-weight: 300; font-size: 14px;
+}
+.gf textarea { resize: none; min-height: 80px; }
+
+.gf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:420px){ .gf-row { grid-template-columns: 1fr; } }
+
+.rule { height: 1px; background: var(--border); margin: 22px 0; }
+
+.pills { display: flex; gap: 7px; flex-wrap: wrap; }
+.pill {
+  flex: 1; min-width: 72px; padding: 9px 6px; text-align: center;
+  background: var(--paper); border: 1.5px solid var(--border); border-radius: 100px;
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  color: var(--ink-60); cursor: pointer; transition: all .15s; letter-spacing: .02em;
+}
+.pill:hover { border-color: var(--gold); color: var(--gold-dk); background: rgba(200,169,110,.06); }
+.pill.on { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+.checks { display: flex; flex-direction: column; gap: 7px; }
+.chk {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--paper);
+  cursor: pointer; transition: all .15s;
+  font-size: 14px; color: var(--ink-60); font-weight: 400;
+  text-transform: none; letter-spacing: 0; margin-bottom: 0;
+}
+.chk:hover { border-color: var(--gold); background: var(--white); color: var(--ink); }
+.chk input[type="checkbox"] { width:15px; height:15px; accent-color:var(--ink); flex-shrink:0; cursor:pointer; }
+
+.btn-submit {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--ink); color: var(--white);
+  border: none; border-radius: var(--radius-md); padding: 17px;
+  font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; cursor: pointer;
+  margin-top: 24px;
+  transition: background .2s, transform .15s var(--ease), box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.14), 0 8px 24px rgba(0,0,0,.08);
+  position: relative; overflow: hidden;
+}
+.btn-submit::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 50%, rgba(200,169,110,.1));
+}
+.btn-submit:hover {
+  background: #2a231a; transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,.2), 0 14px 36px rgba(0,0,0,.12);
+}
+.btn-submit:active { transform: none; }
+
+.thankyou {
+  padding: 56px 48px; text-align: center;
+  display: none; flex-direction: column; align-items: center; gap: 14px;
+}
+.thankyou.on { display: flex; animation: rise .5s var(--ease) both; }
+@media(max-width:540px){ .thankyou { padding: 48px 28px; } }
+
+.ty-ring {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.16), 0 0 0 8px rgba(200,169,110,.12);
+}
+.thankyou h3 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 32px; font-weight: 400; color: var(--ink); line-height: 1.2;
+}
+.thankyou h3 i { font-style: italic; color: var(--gold-dk); }
+.thankyou p { font-size: 15px; color: var(--ink-60); font-weight: 300; line-height: 1.75; max-width: 300px; }
+.back-lnk {
+  margin-top: 8px; font-size: 10px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--gold); cursor: pointer;
+  border-bottom: 1px solid transparent; padding-bottom: 1px; transition: border-color .15s;
+}
+.back-lnk:hover { border-color: var(--gold); }
+
+.toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--ink); color: var(--white);
+  padding: 11px 22px; border-radius: 100px;
+  font-size: 13px; font-weight: 500; letter-spacing: .03em;
+  transition: transform .35s var(--ease); z-index: 999;
+  white-space: nowrap; box-shadow: 0 8px 28px rgba(0,0,0,.2);
+}
+.toast.on { transform: translateX(-50%) translateY(0); }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ════════ ADMIN ════════ -->
+<div id="admin-view" class="view active">
+
+  <nav class="nav">
+    <div class="nav-logo">
+      <div class="nav-dot">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+          <path d="M9 21V12h6v9"/>
+        </svg>
+      </div>
+      Open House Registry
+    </div>
+    <span class="nav-tag">Admin</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-chip"><span></span>Visitor Management</div>
+    <h1>Welcome <i>every guest</i><br>beautifully.</h1>
+    <p>Set up your registry, generate a shareable QR code, and watch sign-ins arrive in real time.</p>
+  </div>
+
+  <div class="workspace">
+
+    <div class="card">
+      <div class="card-title">Configure Registry</div>
+      <div class="field">
+        <label>Agent / Host Name</label>
+        <input type="text" id="prop-agent" placeholder="e.g. Sarah Chen">
+      </div>
+      <div class="field">
+        <label>Welcome Note <span style="text-transform:none;letter-spacing:0;font-weight:300;font-size:10px;color:var(--ink-60)">— optional</span></label>
+        <textarea id="prop-note" placeholder="Thank you for visiting. Please feel free to explore at your own pace…"></textarea>
+      </div>
+      <button class="btn-generate" onclick="generateQR()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/>
+        </svg>
+        Generate QR Code
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Guest Sign-In QR</div>
+      <div class="qr-area" id="qr-area">
+        <div id="qr-placeholder">
+          <div class="qr-empty-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/>
+            </svg>
+          </div>
+          <p>Fill in the details and click<br><strong>Generate QR Code</strong></p>
+        </div>
+        <div id="qr-code" style="display:none"></div>
+        <div class="qr-scan-label" id="qr-scan">Scan to sign in</div>
+      </div>
+      <div class="url-row" id="url-row">
+        <div class="url-row-top">Shareable Link</div>
+        <div class="url-row-val" id="url-val"></div>
+      </div>
+      <div class="action-trio" id="qr-actions">
+        <button class="btn-action" onclick="copyURL()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy
+        </button>
+        <button class="btn-action" onclick="printQR()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </button>
+        <button class="btn-action" onclick="downloadQR()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Save
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="entries-wrap">
+    <div class="entries-head">
+      <div class="entries-heading">
+        Visitor Log
+        <span class="count-chip" id="entry-count">0 guests</span>
+      </div>
+      <button class="btn-csv" onclick="exportCSV()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+    <div id="entries-container">
+      <div class="empty">
+        <div class="empty-ico">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <strong>No visitors yet</strong>
+        <p>Generate your QR code and share it with guests to start collecting sign-ins.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ════════ GUEST VIEW ════════ -->
+<div id="guest-view" class="view">
+  <div class="gcard">
+
+    <div class="ghead">
+      <div class="ghead-accent"></div>
+      <div class="gkicker">Open House</div>
+      <h2>Sign <i>in</i> &amp;<br>make yourself<br>at home.</h2>
+      <div class="ghead-host" id="g-meta"></div>
+    </div>
+
+    <div id="guest-form-wrap">
+      <div class="gform">
+
+        <div class="gnote" id="gnote">
+          <p id="gnote-text"></p>
+        </div>
+
+        <div class="gf-row">
+          <div class="gf">
+            <label>First Name *</label>
+            <input type="text" id="g-fname" placeholder="Jane">
+          </div>
+          <div class="gf">
+            <label>Last Name *</label>
+            <input type="text" id="g-lname" placeholder="Smith">
+          </div>
+        </div>
+
+        <div class="gf">
+          <label>Email Address *</label>
+          <input type="email" id="g-email" placeholder="jane@example.com">
+        </div>
+
+        <div class="gf">
+          <label>Phone Number</label>
+          <input type="tel" id="g-phone" placeholder="(555) 000-0000">
+        </div>
+
+        <div class="rule"></div>
+
+        <div class="gf">
+          <label>Working with an agent?</label>
+          <div class="pills">
+            <button class="pill" onclick="pickPill(this,'agent')">Yes</button>
+            <button class="pill" onclick="pickPill(this,'agent')">No</button>
+            <button class="pill" onclick="pickPill(this,'agent')">Not sure</button>
+          </div>
+        </div>
+
+        <div class="gf" style="margin-top:14px">
+          <label>Interest Level</label>
+          <div class="pills">
+            <button class="pill" onclick="pickPill(this,'interest')">👀 Browsing</button>
+            <button class="pill" onclick="pickPill(this,'interest')">⭐ Interested</button>
+            <button class="pill" onclick="pickPill(this,'interest')">🔥 Very Interested</button>
+          </div>
+        </div>
+
+        <div class="gf" style="margin-top:14px">
+          <label>I'm here because…</label>
+          <div class="checks">
+            <label class="chk"><input type="checkbox" class="icb" value="Buying"> Thinking of buying</label>
+            <label class="chk"><input type="checkbox" class="icb" value="Investing"> Investment / rental opportunity</label>
+            <label class="chk"><input type="checkbox" class="icb" value="Neighborhood"> Exploring the neighborhood</label>
+            <label class="chk"><input type="checkbox" class="icb" value="Just looking"> Just browsing</label>
+          </div>
+        </div>
+
+        <div class="gf" style="margin-top:14px">
+          <label>Questions or Comments</label>
+          <textarea id="g-notes" placeholder="Anything you'd like us to know…"></textarea>
+        </div>
+
+        <button class="btn-submit" onclick="submitGuest()">
+          Sign In
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+
+      </div>
+    </div>
+
+    <div class="thankyou" id="thankyou">
+      <div class="ty-ring">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h3>Thank you<br>for <i>visiting!</i></h3>
+      <p id="ty-msg">We appreciate you stopping by. We'll be in touch soon.</p>
+      <span class="back-lnk" onclick="showView('admin')">← Back to Dashboard</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let entries = JSON.parse(localStorage.getItem('oh_entries') || '[]');
+let propConfig = JSON.parse(localStorage.getItem('oh_config') || '{}');
+let selAgent = '', selInterest = '';
+
+function showView(n) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(n + '-view').classList.add('active');
+}
+
+function init() {
+  const p = new URLSearchParams(location.search);
+  if (p.has('guest')) {
+    loadGuest(p);
+  } else {
+    showView('admin');
+    restoreConfig();
+    renderEntries();
+  }
+}
+
+function loadGuest(p) {
+  showView('guest');
+  const agent = p.get('agent') || '';
+  const note  = p.get('note')  || '';
+  if (agent) document.getElementById('g-meta').textContent = 'Hosted by ' + agent;
+  if (note) {
+    document.getElementById('gnote-text').textContent = note;
+    document.getElementById('gnote').style.display = 'block';
+  }
+  window._gc = { agent };
+}
+
+function restoreConfig() {
+  if (!propConfig.agent) return;
+  document.getElementById('prop-agent').value = propConfig.agent || '';
+  document.getElementById('prop-note').value  = propConfig.note  || '';
+}
+
+function generateQR() {
+  const agent = document.getElementById('prop-agent').value.trim();
+  const note  = document.getElementById('prop-note').value.trim();
+  propConfig = { agent, note };
+  localStorage.setItem('oh_config', JSON.stringify(propConfig));
+
+  const params = new URLSearchParams();
+  params.set('guest', '1');
+  if (agent) params.set('agent', agent);
+  if (note)  params.set('note', note);
+  const url = location.origin + location.pathname + '?' + params.toString();
+
+  const div = document.getElementById('qr-code');
+  div.innerHTML = '';
+  new QRCode(div, {
+    text: url, width: 176, height: 176,
+    colorDark: '#18181b', colorLight: '#faf9f7',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  document.getElementById('qr-placeholder').style.display = 'none';
+  div.style.display = 'flex';
+  document.getElementById('qr-scan').style.display = 'block';
+  document.getElementById('qr-area').classList.add('live');
+  document.getElementById('url-val').textContent = url;
+  document.getElementById('url-row').style.display = 'block';
+  document.getElementById('qr-actions').style.display = 'grid';
+  window._url = url;
+  toast('QR code ready ✓');
+}
+
+function copyURL() {
+  if (!window._url) return;
+  navigator.clipboard.writeText(window._url).then(() => toast('Link copied!'));
+}
+
+function printQR() {
+  const img = document.querySelector('#qr-code img');
+  const agent = document.getElementById('prop-agent').value;
+  if (!img) return;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Open House QR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;1,400&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:#f3f0ea;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:40px;}
+    .card{background:#18181b;border-radius:24px;padding:56px 64px;text-align:center;max-width:380px;width:100%;}
+    .ey{color:#c8a96e;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;margin-bottom:18px;}
+    h1{color:#fff;font-family:'Libre Baskerville',serif;font-size:24px;font-weight:400;font-style:italic;line-height:1.3;margin-bottom:${agent?'10':'32'}px;}
+    .host{color:rgba(255,255,255,.35);font-size:13px;font-weight:300;margin-bottom:30px;}
+    .qr{background:#faf9f7;border-radius:14px;padding:18px;display:inline-block;margin-bottom:20px;}
+    .sc{color:#c8a96e;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;}
+  </style></head><body>
+  <div class="card">
+    <div class="ey">Open House</div>
+    <h1>Sign in &amp; make<br>yourself at home.</h1>
+    ${agent ? `<div class="host">Hosted by ${agent}</div>` : ''}
+    <div class="qr"><img src="${img.src}" width="180" height="180"></div>
+    <div class="sc">Scan to sign in</div>
+  </div></body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 400);
+}
+
+function downloadQR() {
+  const canvas = document.querySelector('#qr-code canvas');
+  if (!canvas) { toast('Generate QR first'); return; }
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'open-house-qr.png';
+  a.click();
+}
+
+function pickPill(btn, group) {
+  btn.closest('.pills').querySelectorAll('.pill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  if (group === 'agent') selAgent = btn.textContent.trim();
+  if (group === 'interest') selInterest = btn.textContent.trim();
+}
+
+function submitGuest() {
+  const fname = document.getElementById('g-fname').value.trim();
+  const lname = document.getElementById('g-lname').value.trim();
+  const email = document.getElementById('g-email').value.trim();
+  const phone = document.getElementById('g-phone').value.trim();
+  const notes = document.getElementById('g-notes').value.trim();
+  const name  = [fname, lname].filter(Boolean).join(' ');
+
+  if (!fname) { flash('g-fname'); toast('Please enter your first name'); return; }
+  if (!email || !email.includes('@')) { flash('g-email'); toast('Please enter a valid email'); return; }
+
+  const interests = [...document.querySelectorAll('.icb:checked')].map(c => c.value);
+  const entry = {
+    id: Date.now(), name, email, phone,
+    agent: selAgent, interest: selInterest,
+    interests: interests.join(', '), notes,
+    time: new Date().toLocaleString()
+  };
+  entries = JSON.parse(localStorage.getItem('oh_entries') || '[]');
+  entries.unshift(entry);
+  localStorage.setItem('oh_entries', JSON.stringify(entries));
+
+  document.getElementById('guest-form-wrap').style.display = 'none';
+  document.getElementById('thankyou').classList.add('on');
+  document.getElementById('ty-msg').textContent =
+    `Thanks, ${fname}! We'll reach out at ${email}.`;
+}
+
+function flash(id) {
+  const el = document.getElementById(id);
+  el.style.borderColor = 'var(--rose)';
+  el.style.boxShadow = '0 0 0 4px rgba(212,133,122,.15)';
+  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2000);
+}
+
+function renderEntries() {
+  entries = JSON.parse(localStorage.getItem('oh_entries') || '[]');
+  const box = document.getElementById('entries-container');
+  document.getElementById('entry-count').textContent =
+    entries.length + (entries.length === 1 ? ' guest' : ' guests');
+
+  if (!entries.length) {
+    box.innerHTML = `<div class="empty">
+      <div class="empty-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <strong>No visitors yet</strong>
+      <p>Generate your QR code and share it with guests to start collecting sign-ins.</p>
+    </div>`;
+    return;
+  }
+
+  box.innerHTML = `<div style="overflow-x:auto"><table class="etable">
+    <thead><tr>
+      <th>Name</th><th>Email</th><th>Phone</th>
+      <th>Agent?</th><th>Interest</th><th>Categories</th><th>Notes</th><th>Time</th>
+    </tr></thead>
+    <tbody>${entries.map(e => `<tr>
+      <td class="td-bold">${esc(e.name)}</td>
+      <td class="td-mute">${esc(e.email)}</td>
+      <td class="td-mute">${esc(e.phone||'—')}</td>
+      <td class="td-mute">${esc(e.agent||'—')}</td>
+      <td>${e.interest ? `<span class="badge">${esc(e.interest)}</span>` : '<span class="td-mute">—</span>'}</td>
+      <td class="td-mute">${esc(e.interests||'—')}</td>
+      <td class="td-mute" style="max-width:160px">${esc(e.notes||'—')}</td>
+      <td class="td-time">${esc(e.time)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function exportCSV() {
+  if (!entries.length) { toast('No entries to export'); return; }
+  const h = ['Name','Email','Phone','Working with Agent','Interest Level','Interests','Notes','Time'];
+  const r = entries.map(e => [e.name,e.email,e.phone,e.agent,e.interest,e.interests,e.notes,e.time]);
+  const csv = [h,...r].map(row => row.map(c => `"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'open-house-registry.csv';
+  a.click();
+  toast('CSV exported!');
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2800);
+}
+
+setInterval(() => {
+  if (document.querySelector('#admin-view.active')) renderEntries();
+}, 4000);
+
+init();
+</script>
+</body>
+</html>
