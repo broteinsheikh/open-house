@@ -701,7 +701,12 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
-let entries = JSON.parse(localStorage.getItem('oh_entries') || '[]');
+const BIN_ID  = '69f56696aaba8821975fff24';
+const API_KEY = '$2a$10$xeemhLbdNFE64ixLGHW9cupIMdwa5/baaIXxNKYU4f.RJfLhaoYcO';
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const HEADERS = { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY };
+
+let entries = [];
 let propConfig = JSON.parse(localStorage.getItem('oh_config') || '{}');
 let selAgent = '', selInterest = '';
 
@@ -819,7 +824,7 @@ function pickPill(btn, group) {
   if (group === 'interest') selInterest = btn.textContent.trim();
 }
 
-function submitGuest() {
+async function submitGuest() {
   const fname = document.getElementById('g-fname').value.trim();
   const lname = document.getElementById('g-lname').value.trim();
   const email = document.getElementById('g-email').value.trim();
@@ -830,6 +835,10 @@ function submitGuest() {
   if (!fname) { flash('g-fname'); toast('Please enter your first name'); return; }
   if (!email || !email.includes('@')) { flash('g-email'); toast('Please enter a valid email'); return; }
 
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
   const interests = [...document.querySelectorAll('.icb:checked')].map(c => c.value);
   const entry = {
     id: Date.now(), name, email, phone,
@@ -837,9 +846,23 @@ function submitGuest() {
     interests: interests.join(', '), notes,
     time: new Date().toLocaleString()
   };
-  entries = JSON.parse(localStorage.getItem('oh_entries') || '[]');
-  entries.unshift(entry);
-  localStorage.setItem('oh_entries', JSON.stringify(entries));
+
+  try {
+    const res  = await fetch(BIN_URL + '/latest', { headers: { 'X-Master-Key': API_KEY } });
+    const data = await res.json();
+    const current = Array.isArray(data.record) ? data.record : (Array.isArray(data.record.entries) ? data.record.entries : []);
+    const updated = [entry, ...current];
+    await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: HEADERS,
+      body: JSON.stringify(updated)
+    });
+  } catch(e) {
+    toast('Could not save — check connection');
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+    return;
+  }
 
   document.getElementById('guest-form-wrap').style.display = 'none';
   document.getElementById('thankyou').classList.add('on');
@@ -854,9 +877,16 @@ function flash(id) {
   setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2000);
 }
 
-function renderEntries() {
-  entries = JSON.parse(localStorage.getItem('oh_entries') || '[]');
+async function renderEntries() {
   const box = document.getElementById('entries-container');
+  try {
+    const res  = await fetch(BIN_URL + '/latest', { headers: { 'X-Master-Key': API_KEY } });
+    const data = await res.json();
+    entries = Array.isArray(data.record) ? data.record : [];
+  } catch(e) {
+    entries = [];
+  }
+
   document.getElementById('entry-count').textContent =
     entries.length + (entries.length === 1 ? ' guest' : ' guests');
 
@@ -912,7 +942,7 @@ function toast(msg) {
 
 setInterval(() => {
   if (document.querySelector('#admin-view.active')) renderEntries();
-}, 4000);
+}, 10000);
 
 init();
 </script>
