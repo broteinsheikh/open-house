@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#18181b">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Open House Registry</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -489,6 +491,41 @@ body {
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--paper); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ══ MOBILE ══ */
+@media (max-width: 600px) {
+  #guest-view { padding: 0; align-items: flex-start; background: var(--ink); }
+  .gcard { max-width: 100%; border-radius: 0; min-height: 100vh; box-shadow: none; animation: none; }
+  .ghead { padding: 56px 24px 36px; }
+  .ghead-accent { left: 24px; right: 24px; }
+  .ghead h2 { font-size: 32px; }
+  .gform { padding: 28px 24px 48px; }
+  .gf input[type="text"], .gf input[type="email"], .gf input[type="tel"], .gf textarea {
+    font-size: 16px; padding: 15px; border-radius: 10px;
+  }
+  .gf-row { grid-template-columns: 1fr; gap: 0; }
+  .pill { padding: 13px 6px; font-size: 13px; min-height: 46px; }
+  .chk { padding: 14px 16px; font-size: 15px; min-height: 52px; }
+  .chk input[type="checkbox"] { width: 20px; height: 20px; }
+  .btn-submit { padding: 20px; font-size: 13px; margin-top: 28px; border-radius: 14px; min-height: 58px; }
+  .thankyou { padding: 52px 24px; }
+  .hero { padding: 36px 20px 28px; }
+  .hero h1 { font-size: 30px; }
+  .hero p { font-size: 14px; }
+  .workspace { padding: 16px; gap: 16px; }
+  .card { padding: 22px 18px; border-radius: 16px; }
+  .field input[type="text"], .field textarea { font-size: 16px; padding: 15px; }
+  .btn-generate { padding: 17px; font-size: 12px; min-height: 52px; }
+  .entries-wrap { margin: 0 16px 32px; border-radius: 16px; }
+  .entries-head { padding: 16px 18px; }
+  .entries-heading { font-size: 17px; }
+  .etable th, .etable td { padding: 11px 12px; font-size: 12px; }
+  .action-trio { gap: 6px; }
+  .btn-action { padding: 13px 4px; font-size: 10px; min-height: 44px; }
+  .rule { margin: 18px 0; }
+  .gnote { margin-bottom: 22px; }
+}
+html, body { -webkit-overflow-scrolling: touch; }
 </style>
 </head>
 <body>
