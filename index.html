@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0058)file:///Users/moalagi/Downloads/open-house-registry_4.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#18181b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Open House Registry</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="./index_files/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./index_files/css2" rel="stylesheet">
 <style>
 :root {
   --ink:      #18181b;
@@ -537,8 +537,8 @@ html, body { -webkit-overflow-scrolling: touch; }
     <div class="nav-logo">
       <div class="nav-dot">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8">
-          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
-          <path d="M9 21V12h6v9"/>
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"></path>
+          <path d="M9 21V12h6v9"></path>
         </svg>
       </div>
       Open House Registry
@@ -566,10 +566,10 @@ html, body { -webkit-overflow-scrolling: touch; }
       </div>
       <button class="btn-generate" onclick="generateQR()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-          <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/>
+          <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+          <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"></path>
         </svg>
         Generate QR Code
       </button>
@@ -581,10 +581,10 @@ html, body { -webkit-overflow-scrolling: touch; }
         <div id="qr-placeholder">
           <div class="qr-empty-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-              <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/>
+              <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              <path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"></path>
             </svg>
           </div>
           <p>Fill in the details and click<br><strong>Generate QR Code</strong></p>
@@ -598,15 +598,15 @@ html, body { -webkit-overflow-scrolling: touch; }
       </div>
       <div class="action-trio" id="qr-actions">
         <button class="btn-action" onclick="copyURL()">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>
           Copy
         </button>
         <button class="btn-action" onclick="printQR()">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
           Print
         </button>
         <button class="btn-action" onclick="downloadQR()">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           Save
         </button>
       </div>
@@ -618,22 +618,38 @@ html, body { -webkit-overflow-scrolling: touch; }
     <div class="entries-head">
       <div class="entries-heading">
         Visitor Log
-        <span class="count-chip" id="entry-count">0 guests</span>
+        <span class="count-chip" id="entry-count">2 guests</span>
       </div>
       <button class="btn-csv" onclick="exportCSV()">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Export CSV
       </button>
     </div>
-    <div id="entries-container">
-      <div class="empty">
-        <div class="empty-ico">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <strong>No visitors yet</strong>
-        <p>Generate your QR code and share it with guests to start collecting sign-ins.</p>
-      </div>
-    </div>
+    <div id="entries-container"><div style="overflow-x:auto"><table class="etable">
+    <thead><tr>
+      <th>Name</th><th>Email</th><th>Phone</th>
+      <th>Agent?</th><th>Interest</th><th>Categories</th><th>Notes</th><th>Time</th>
+    </tr></thead>
+    <tbody><tr>
+      <td class="td-bold">Jenna Talia</td>
+      <td class="td-mute">bigtalia@gmail.com</td>
+      <td class="td-mute">2063310944</td>
+      <td class="td-mute">No</td>
+      <td><span class="badge">⭐ Interested</span></td>
+      <td class="td-mute">Buying, Investing, Neighborhood, Just looking</td>
+      <td class="td-mute" style="max-width:160px">—</td>
+      <td class="td-time">5/1/2026, 8:25:29 PM</td>
+    </tr><tr>
+      <td class="td-bold">Mo Alagi</td>
+      <td class="td-mute">micppdesign@gmail.com</td>
+      <td class="td-mute">2535718775</td>
+      <td class="td-mute">No</td>
+      <td><span class="badge">🔥 Very Interested</span></td>
+      <td class="td-mute">Buying</td>
+      <td class="td-mute" style="max-width:160px">—</td>
+      <td class="td-time">5/1/2026, 8:07:51 PM</td>
+    </tr></tbody>
+  </table></div></div>
   </div>
 
 </div>
@@ -683,18 +699,18 @@ html, body { -webkit-overflow-scrolling: touch; }
         <div class="gf">
           <label>Working with an agent?</label>
           <div class="pills">
-            <button class="pill" onclick="pickPill(this,'agent')">Yes</button>
-            <button class="pill" onclick="pickPill(this,'agent')">No</button>
-            <button class="pill" onclick="pickPill(this,'agent')">Not sure</button>
+            <button class="pill" onclick="pickPill(this,&#39;agent&#39;)">Yes</button>
+            <button class="pill" onclick="pickPill(this,&#39;agent&#39;)">No</button>
+            <button class="pill" onclick="pickPill(this,&#39;agent&#39;)">Not sure</button>
           </div>
         </div>
 
         <div class="gf" style="margin-top:14px">
           <label>Interest Level</label>
           <div class="pills">
-            <button class="pill" onclick="pickPill(this,'interest')">👀 Browsing</button>
-            <button class="pill" onclick="pickPill(this,'interest')">⭐ Interested</button>
-            <button class="pill" onclick="pickPill(this,'interest')">🔥 Very Interested</button>
+            <button class="pill" onclick="pickPill(this,&#39;interest&#39;)">👀 Browsing</button>
+            <button class="pill" onclick="pickPill(this,&#39;interest&#39;)">⭐ Interested</button>
+            <button class="pill" onclick="pickPill(this,&#39;interest&#39;)">🔥 Very Interested</button>
           </div>
         </div>
 
@@ -710,12 +726,12 @@ html, body { -webkit-overflow-scrolling: touch; }
 
         <div class="gf" style="margin-top:14px">
           <label>Questions or Comments</label>
-          <textarea id="g-notes" placeholder="Anything you'd like us to know…"></textarea>
+          <textarea id="g-notes" placeholder="Anything you&#39;d like us to know…"></textarea>
         </div>
 
         <button class="btn-submit" onclick="submitGuest()">
           Sign In
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
         </button>
 
       </div>
@@ -724,12 +740,12 @@ html, body { -webkit-overflow-scrolling: touch; }
     <div class="thankyou" id="thankyou">
       <div class="ty-ring">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
+          <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </div>
       <h3>Thank you<br>for <i>visiting!</i></h3>
       <p id="ty-msg">We appreciate you stopping by. We'll be in touch soon.</p>
-      <span class="back-lnk" onclick="showView('admin')">← Back to Dashboard</span>
+      <span class="back-lnk" onclick="showView(&#39;admin&#39;)">← Back to Dashboard</span>
     </div>
 
   </div>
@@ -983,5 +999,6 @@ setInterval(() => {
 
 init();
 </script>
-</body>
-</html>
+
+
+</body></html>
